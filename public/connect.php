@@ -5,7 +5,8 @@
         die("Maximum Seat Limit Exceeded");
     }
     //Connecting database
-    $conn = new mysqli('localhost:3306','app','password','ticket_booking');
+    // $conn = new mysqli('sql304.epizy.com','epiz_29919729','CVb5ovD0QT7','epiz_29919729_ticket_booking');
+    $conn = new mysqli('localhost:3306','root','password','ticket_booking');
     if($conn->connect_error){
         die('Database Connection Failed : '.$conn->connect_error); 
     } 
@@ -38,15 +39,19 @@
             $query = "Insert into reserved_seats (booking_id,reserved_row,reserved_column) values(?,?,?)";
             $stmt = $conn->prepare($query);
             $stmt->bind_param("iii",$inserted_id,$r,$c);
+            $temp = [];
             for($i=0;$i<count($bookedSeats);$i++){
                 $r = $bookedSeats[$i]['reserved_row'];
                 $c = $bookedSeats[$i]['reserved_column'];
                 $stmt->execute();
-                echo "Booked Seat: ".$r."-".$c."<br>";
+                $temp[] = $r."-".$c;
+                // echo "Booked Seat: ".$r."-".$c."<br>";
             }
+            $bookSeats->render_coach($temp);
             $stmt->close();
+            
         } else {
-            echo('Seats Not Available');
+            $bookSeats->render_coach($temp);
         }
     }
 ?>
